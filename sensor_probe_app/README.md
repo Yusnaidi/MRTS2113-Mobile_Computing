@@ -1,16 +1,16 @@
 # sensor_probe_app
 
-A new Flutter project.
+A flutter app to probe available built in sensors such as accelerometer, gyroscope, magnetometer, and barometer in mobile devices and tablets.
 
-## Getting Started
+Note: The sample output screen can be found at the "output" folder.
 
-This project is a starting point for a Flutter application.
+## Dependencies and API Used in This Program
 
-A few resources to get you started if this is your first Flutter project:
+Android API Level 34 Rev 3.
+sensors_plus: ^6.1.0
+device_info_plus: ^11.1.1
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+The flutter packages can be found at:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+https://pub.dev/packages/sensors_plus
+https://pub.dev/packages/device_info_plus
