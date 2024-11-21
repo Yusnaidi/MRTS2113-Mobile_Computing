@@ -12,7 +12,7 @@ class SensorProbeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Sensor Probe App',
+      title: 'Sensor Probe',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -40,21 +40,9 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
   Future<void> _probeSensors() async {
     final List<Map<String, dynamic>> sensors = [];
 
-    await _probeAccelerometer(sensors);
-    await _probeGyroscope(sensors);
-    await _probeMagnetometer(sensors);
-    await _probeBarometer(sensors);
-    await _probeDeviceInfo(sensors);
-
-    setState(() {
-      _availableSensors = sensors;
-      _isLoading = false;
-    });
-  }
-
-  Future<void> _probeAccelerometer(List<Map<String, dynamic>> sensors) async {
+    // Accelerometer Sensor Probe
     try {
-      final completer = Completer<void>();
+      final completer = Completer<bool>();
       StreamSubscription? subscription;
 
       subscription = accelerometerEvents.listen((AccelerometerEvent event) {
@@ -62,22 +50,21 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
           'type': 'Accelerometer',
           'available': true,
           'details': 'Detects device acceleration',
-          'x': event.x.toStringAsFixed(2),
-          'y': event.y.toStringAsFixed(2),
-          'z': event.z.toStringAsFixed(2)
+          'x': event.x,
+          'y': event.y,
+          'z': event.z
         });
         subscription?.cancel();
         if (!completer.isCompleted) {
-          completer.complete();
+          completer.complete(true);
         }
       }, onError: (error) {
         sensors.add({
           'type': 'Accelerometer',
           'available': false,
-          'details': 'Sensor detection failed'
         });
         if (!completer.isCompleted) {
-          completer.complete();
+          completer.complete(false);
         }
       }, cancelOnError: true);
 
@@ -88,22 +75,20 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
           sensors.add({
             'type': 'Accelerometer',
             'available': false,
-            'details': 'Sensor timeout'
           });
+          return false;
         },
       );
     } catch (e) {
       sensors.add({
         'type': 'Accelerometer',
         'available': false,
-        'details': 'Probe exception occurred'
       });
     }
-  }
 
-  Future<void> _probeGyroscope(List<Map<String, dynamic>> sensors) async {
+    // Gyroscope Sensor Probe
     try {
-      final completer = Completer<void>();
+      final completer = Completer<bool>();
       StreamSubscription? subscription;
 
       subscription = gyroscopeEvents.listen((GyroscopeEvent event) {
@@ -111,22 +96,21 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
           'type': 'Gyroscope',
           'available': true,
           'details': 'Measures device rotation',
-          'x': event.x.toStringAsFixed(2),
-          'y': event.y.toStringAsFixed(2),
-          'z': event.z.toStringAsFixed(2)
+          'x': event.x,
+          'y': event.y,
+          'z': event.z
         });
         subscription?.cancel();
         if (!completer.isCompleted) {
-          completer.complete();
+          completer.complete(true);
         }
       }, onError: (error) {
         sensors.add({
           'type': 'Gyroscope',
           'available': false,
-          'details': 'Sensor detection failed'
         });
         if (!completer.isCompleted) {
-          completer.complete();
+          completer.complete(false);
         }
       }, cancelOnError: true);
 
@@ -137,22 +121,20 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
           sensors.add({
             'type': 'Gyroscope',
             'available': false,
-            'details': 'Sensor timeout'
           });
+          return false;
         },
       );
     } catch (e) {
       sensors.add({
         'type': 'Gyroscope',
         'available': false,
-        'details': 'Probe exception occurred'
       });
     }
-  }
 
-  Future<void> _probeMagnetometer(List<Map<String, dynamic>> sensors) async {
+    // Magnetometer Sensor Probe
     try {
-      final completer = Completer<void>();
+      final completer = Completer<bool>();
       StreamSubscription? subscription;
 
       subscription = magnetometerEvents.listen((MagnetometerEvent event) {
@@ -160,22 +142,21 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
           'type': 'Magnetometer',
           'available': true,
           'details': 'Detects magnetic field',
-          'x': event.x.toStringAsFixed(2),
-          'y': event.y.toStringAsFixed(2),
-          'z': event.z.toStringAsFixed(2)
+          'x': event.x,
+          'y': event.y,
+          'z': event.z
         });
         subscription?.cancel();
         if (!completer.isCompleted) {
-          completer.complete();
+          completer.complete(true);
         }
       }, onError: (error) {
         sensors.add({
           'type': 'Magnetometer',
           'available': false,
-          'details': 'Sensor detection failed'
         });
         if (!completer.isCompleted) {
-          completer.complete();
+          completer.complete(false);
         }
       }, cancelOnError: true);
 
@@ -186,39 +167,18 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
           sensors.add({
             'type': 'Magnetometer',
             'available': false,
-            'details': 'Sensor timeout'
           });
+          return false;
         },
       );
     } catch (e) {
       sensors.add({
         'type': 'Magnetometer',
         'available': false,
-        'details': 'Probe exception occurred'
       });
     }
-  }
 
-  Future<void> _probeBarometer(List<Map<String, dynamic>> sensors) async {
-    try {
-      // Placeholder for barometer probe due to limitations in sensors_plus
-      sensors.add({
-        'type': 'Barometer',
-        'available': false,
-        'details': 'Barometer sensor detection not directly supported',
-        'pressure': 'N/A'
-      });
-    } catch (e) {
-      sensors.add({
-        'type': 'Barometer',
-        'available': false,
-        'details': 'Barometer probe exception occurred',
-        'pressure': 'N/A'
-      });
-    }
-  }
-
-  Future<void> _probeDeviceInfo(List<Map<String, dynamic>> sensors) async {
+    // Device-specific sensor information
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
     try {
@@ -245,13 +205,18 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
         'available': false,
       });
     }
+
+    setState(() {
+      _availableSensors = sensors;
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sensor Probe App'),
+        title: Text('Sensor Probe'),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
@@ -299,19 +264,12 @@ class _SensorProbeHomePageState extends State<SensorProbeHomePage> {
       case 'Gyroscope':
       case 'Magnetometer':
         return Text(
-          sensor['available'] ?? false
+          sensor['available']
               ? '${sensor['details'] ?? 'Sensor Available'}\n'
               'X: ${sensor['x'] ?? 'N/A'}, '
               'Y: ${sensor['y'] ?? 'N/A'}, '
               'Z: ${sensor['z'] ?? 'N/A'}'
               : 'Sensor Not Available',
-        );
-      case 'Barometer':
-        return Text(
-          sensor['available'] ?? false
-              ? '${sensor['details'] ?? 'Sensor Available'}\n'
-              'Pressure: ${sensor['pressure'] ?? 'N/A'}'
-              : 'Barometer Sensor Not Available',
         );
       default:
         return Text('No additional details');
